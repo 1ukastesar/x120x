@@ -10,6 +10,7 @@ from gpiozero import InputDevice, Button
 import time
 
 # Constants
+CLEAR_TERM_CHAR = '\033c'
 CHG_ONOFF_PIN = 16
 PLD_BUTTON = Button(6)
 bus = smbus2.SMBus(1)
@@ -125,22 +126,23 @@ def display_status(shutdown):
     else:
         warn_status = ""
 
-    print("\n========== X120x UPS Status ==========")
-    print(f"UPS Voltage: {voltage:.3f}V")
-    print(f"Battery: {capacity:.3f}%")
-    print(f"Charging: {charge_status}")
-    print("\n========== RPi5 System Stats ==========")
-    print(f"Input Voltage: {input_voltage:.3f}V")
-    print(f"CPU Volts: {cpu_volts:.3f}V")
-    print(f"CPU Amps: {cpu_amps:.3f}A")
-    print(f"System Watts: {pwr_use:.3f}W")
-    print(f"CPU Temp: {cpu_temp:.1f}°C")
-    print(f"Fan RPM: {fan_rpm}")
-    print("\n========== Power Status ==========")
+    print(CLEAR_TERM_CHAR)
+    print("========= X120x UPS Status  =========")
+    print(f"UPS Voltage:\t{voltage:.3f}V")
+    print(f"Battery:\t{capacity:.3f}%")
+    print(f"Charging:\t{charge_status}")
+    print("\n========= RPi5 System Stats =========")
+    print(f"Input Voltage:\t{input_voltage:.3f}V")
+    print(f"CPU Volts:\t{cpu_volts:.3f}V")
+    print(f"CPU Amps:\t{cpu_amps:.3f}A")
+    print(f"System Watts:\t{pwr_use:.3f}W")
+    print(f"CPU Temp:\t{cpu_temp:.1f}°C")
+    print(f"Fan RPM:\t{fan_rpm}")
+    print("\n==========  Power Status  ===========")
     print(power_status)
     if warn_status:
         print(f"WARNING: {warn_status}")
-    print("======================================")
+    print("=====================================")
     return shutdown
 
 if __name__ == "__main__":
@@ -148,6 +150,6 @@ if __name__ == "__main__":
     try:
         while True:
             shutdown = display_status(shutdown)
-            time.sleep(30)  # Update every 30 seconds
+            time.sleep(1)  # Update every 30 seconds
     except KeyboardInterrupt:
         print("\nMonitoring stopped.")
