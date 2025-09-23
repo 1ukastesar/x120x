@@ -12,7 +12,8 @@ from subprocess import call
 # User-configurable variables
 SHUTDOWN_THRESHOLD = 3  # Number of consecutive failures required for shutdown
 SLEEP_TIME = 60  # Time in seconds to wait between failure checks
-Loop =  False
+Loop =  True
+PRINT_STATUS_EVERY = 60
 
 def readVoltage(bus):
     read = bus.read_word_data(address, 2) # reads word data (16 bit)
@@ -58,6 +59,7 @@ try:
     pld_line = chip.get_line(PLD_PIN)
     pld_line.request(consumer="PLD", type=gpiod.LINE_REQ_DIR_IN)
 
+    loop_count = 0
     while True:
         failure_counter = 0
 
@@ -66,7 +68,8 @@ try:
             voltage = readVoltage(bus)
             battery_status = get_battery_status(voltage)
             capacity = readCapacity(bus)
-            print(f"Capacity: {capacity:.2f}% ({battery_status}), AC Power State: {'Plugged in' if ac_power_state == 1 else 'Unplugged'}, Voltage: {voltage:.2f}V")
+            if loop_count % PRINT_STATUS_EVERY == 0:
+                print(f"Capacity: {capacity:.2f}% ({battery_status}), AC Power State: {'Plugged in' if ac_power_state == 1 else 'Unplugged'}, Voltage: {voltage:.2f}V")
             if ac_power_state == 0:
                 print("UPS is unplugged or AC power loss detected.")
                 failure_counter += 1
